@@ -140,12 +140,14 @@ class Protocol:
         while len(payload) > len(Protocol.PACKET_END):
             dtype, dlen = struct.unpack('!hh', payload[0:4])
             data = payload[4:4+dlen]
-            results.append( (
-                dtype,
-                Protocol.ids_tp[dtype][1],
-                Protocol.interpret_value(data, Protocol.ids_tp[dtype][0])
-                )
-            )
+            if dtype not in Protocol.ids_tp:
+                results.append((dtype, "unknown", data))
+            else:
+                results.append((
+                    dtype,
+                    Protocol.ids_tp[dtype][1],
+                    Protocol.interpret_value(data, Protocol.ids_tp[dtype][0])
+                ))
             payload = payload[4+dlen:]
         return results
 
